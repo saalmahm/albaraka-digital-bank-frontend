@@ -2,40 +2,36 @@ import { Routes } from '@angular/router';
 
 /**
  * Définition des routes principales de l'application.
- * À ce stade, nous préparons simplement la structure des URLs.
+ * Chaque domaine métier est chargé en lazy loading via son module dédié.
  */
 export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'auth' // page d'entrée : parcours d'authentification
+    redirectTo: 'auth'
   },
   {
     path: 'auth',
-    // Plus tard : lazy-load 
     loadChildren: () =>
-      import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES)
+      import('./features/auth/auth.module').then((m) => m.AuthModule)
   },
   {
     path: 'client',
-    // Plus tard : routes pour le dashboard client et les opérations (dépôt, retrait, virement)
     loadChildren: () =>
-      import('./features/client/client.routes').then((m) => m.CLIENT_ROUTES)
+      import('./features/client/client.module').then((m) => m.ClientModule)
   },
   {
     path: 'agent',
-    // Plus tard : routes pour la validation des opérations PENDING
     loadChildren: () =>
-      import('./features/agent/agent.routes').then((m) => m.AGENT_ROUTES)
+      import('./features/agent/agent.module').then((m) => m.AgentModule)
   },
   {
     path: 'admin',
-    // Plus tard : routes pour la gestion des utilisateurs et des rôles
     loadChildren: () =>
-      import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES)
+      import('./features/admin/admin.module').then((m) => m.AdminModule)
   },
   {
     path: '**',
-    redirectTo: 'auth' // TODO: plus tard, créer une vraie page 404
+    redirectTo: 'auth'
   }
 ];
