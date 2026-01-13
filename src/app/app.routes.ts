@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
-import { authRoleGuard } from './core/guards/auth-role.guard';
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/auth-role.guard';
+import { ForbiddenComponent } from './shared/components/forbidden/forbidden.component';
 
 export const routes: Routes = [
   {
@@ -14,24 +16,28 @@ export const routes: Routes = [
   },
   {
     path: 'client',
-    canActivate: [authRoleGuard],
-    data: { roles: ['CLIENT'] }, // à adapter si ton backend met autre chose
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['CLIENT'] }, 
     loadChildren: () =>
       import('./features/client/client.module').then((m) => m.ClientModule)
   },
   {
     path: 'agent',
-    canActivate: [authRoleGuard],
-    data: { roles: ['AGENT_BANCAIRE'] }, // <-- IMPORTANT : même nom que dans le token
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['AGENT_BANCAIRE'] }, 
     loadChildren: () =>
       import('./features/agent/agent.module').then((m) => m.AgentModule)
   },
   {
     path: 'admin',
-    canActivate: [authRoleGuard],
-    data: { roles: ['ADMIN'] }, // adapter si besoin (ROLE_ADMIN, etc.)
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] },
     loadChildren: () =>
       import('./features/admin/admin.module').then((m) => m.AdminModule)
+  },
+  {
+    path: 'forbidden',
+    component: ForbiddenComponent
   },
   {
     path: '**',
