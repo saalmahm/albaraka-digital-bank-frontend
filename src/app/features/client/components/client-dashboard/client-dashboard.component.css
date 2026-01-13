@@ -1,3 +1,67 @@
 .client-dashboard {
-  padding: 2rem;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
+
+.account-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.account-balance .amount {
+  font-weight: 600;
+  font-size: 1.4rem;
+  color: #0f766e;
+}
+
+.error-message {
+  color: #b91c1c;
+  margin-top: 8px;
+}
+
+.operations-section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.operations-section th,
+.operations-section td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-validated {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.status-pending {
+  background-color: #fef9c3;
+  color: #854d0e;
+}
+
+.status-rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.pagination {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
