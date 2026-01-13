@@ -6,16 +6,16 @@ import { PendingOperationsComponent } from './components/pending-operations/pend
 
 /**
  * AgentModule
- * - Gère la validation des opérations en attente
+ * - Gère la validation des opérations en attente (PENDING) par l'agent bancaire.
  */
 @NgModule({
-  declarations: [
-    PendingOperationsComponent
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     SharedModule,
-    AgentRoutingModule
+    AgentRoutingModule,
+    // Composant standalone importé ici
+    PendingOperationsComponent
   ]
 })
 export class AgentModule {}

@@ -9,13 +9,12 @@ import { UserManagementComponent } from './components/user-management/user-manag
  * - Gère la gestion des utilisateurs et des rôles.
  */
 @NgModule({
-  declarations: [
-    UserManagementComponent
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     SharedModule,
-    AdminRoutingModule
+    AdminRoutingModule,
+    UserManagementComponent
   ]
 })
 export class AdminModule {}
