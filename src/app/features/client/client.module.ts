@@ -9,13 +9,12 @@ import { ClientDashboardComponent } from './components/client-dashboard/client-d
  * - Gère le dashboard client et les opérations (dépôt, retrait, virement).
  */
 @NgModule({
-  declarations: [
-    ClientDashboardComponent
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     SharedModule,
-    ClientRoutingModule
+    ClientRoutingModule,
+    ClientDashboardComponent
   ]
 })
 export class ClientModule {}
