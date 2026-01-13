@@ -1,9 +1,69 @@
 <div class="client-dashboard">
-  <h1>Espace client</h1>
+  <!-- Section compte / solde -->
+  <section class="account-section">
+    <h2>Mon compte</h2>
 
-  <button mat-button color="warn" (click)="authService.logout()">
-    Se déconnecter
-  </button>
+    <div *ngIf="isLoadingAccount">Chargement des informations du compte...</div>
+    <div *ngIf="errorAccount" class="error-message">{{ errorAccount }}</div>
 
-  <p>Dashboard client - solde et opérations (à implémenter).</p>
+    <div
+      *ngIf="!isLoadingAccount && !errorAccount && account as acc"
+      class="account-card"
+    >
+      <div class="account-number">Compte : {{ acc.accountNumber }}</div>
+      <div class="account-owner">{{ acc.ownerFullName }} ({{ acc.ownerEmail }})</div>
+      <div class="account-balance">
+        Solde courant :
+        <span class="amount">
+          {{ acc.balance | number:'1.2-2' }} DH
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section historique opérations -->
+  <section class="operations-section">
+    <h2>Historique des opérations</h2>
+
+    <div *ngIf="isLoadingOperations">Chargement de l'historique des opérations...</div>
+    <div *ngIf="errorOperations" class="error-message">{{ errorOperations }}</div>
+
+    <table *ngIf="!isLoadingOperations && !errorOperations && operations.length > 0">
+      <thead>
+        <tr>
+          <th>Date création</th>
+          <th>Type</th>
+          <th>Montant</th>
+          <th>Statut</th>
+          <th>Compte source</th>
+          <th>Compte destination</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let op of operations">
+          <td>{{ op.createdAt | date:'short' }}</td>
+          <td>{{ op.type }}</td>
+          <td>{{ op.amount | number:'1.2-2' }} DH</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(op.status)">
+              {{ op.status }}
+            </span>
+          </td>
+          <td>{{ op.accountSourceNumber }}</td>
+          <td>{{ op.accountDestinationNumber || '-' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!isLoadingOperations && !errorOperations && operations.length === 0">
+      Aucune opération trouvée.
+    </div>
+
+    <!-- Pagination simple -->
+    <div *ngIf="totalPages > 1" class="pagination">
+      <button (click)="goToPage(page - 1)" [disabled]="page === 0">Précédent</button>
+      <span>Page {{ page + 1 }} / {{ totalPages }}</span>
+      <button (click)="goToPage(page + 1)" [disabled]="page + 1 >= totalPages">Suivant</button>
+    </div>
+  </section>
 </div>
