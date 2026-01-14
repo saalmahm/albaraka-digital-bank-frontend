@@ -1,0 +1,103 @@
+<header class="main-header">
+  <h1>Effectuer un virement</h1>
+  <p class="subtitle">
+    Transférez de l'argent vers un autre compte. Selon le montant et les règles métier,
+    l'opération peut être validée immédiatement ou passer en statut <strong>PENDING</strong>.
+  </p>
+</header>
+
+<section class="transfer-panel">
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="line-accent"></div>
+      <span>Formulaire de virement</span>
+    </div>
+
+    <form [formGroup]="transferForm" (ngSubmit)="onSubmit()">
+<div class="form-grid">
+  <!-- Compte destinataire -->
+  <div class="form-field full-width">
+    <label for="destinationAccountNumber">Compte destinataire</label>
+    <input
+      id="destinationAccountNumber"
+      type="text"
+      formControlName="destinationAccountNumber"
+      placeholder="Ex : ACC-000999"
+    />
+    <div class="field-error" *ngIf="f['destinationAccountNumber'].touched && f['destinationAccountNumber'].invalid">
+      <span *ngIf="f['destinationAccountNumber'].errors?.['required']">
+        Le compte destinataire est obligatoire.
+      </span>
+      <span *ngIf="f['destinationAccountNumber'].errors?.['minlength']">
+        Le numéro de compte est trop court.
+      </span>
+      <span *ngIf="f['destinationAccountNumber'].errors?.['maxlength']">
+        Le numéro de compte est trop long.
+      </span>
+      <span *ngIf="f['destinationAccountNumber'].errors?.['pattern']">
+        Le format du numéro de compte est invalide.
+      </span>
+    </div>
+  </div>
+
+  <!-- Montant -->
+  <div class="form-field">
+    <label for="amount">Montant</label>
+    <input
+      id="amount"
+      type="number"
+      formControlName="amount"
+      placeholder="Ex : 500.00"
+    />
+    <div class="field-error" *ngIf="f['amount'].touched && f['amount'].invalid">
+      <span *ngIf="f['amount'].errors?.['required']">Le montant est obligatoire.</span>
+      <span *ngIf="f['amount'].errors?.['min']">Le montant doit être strictement positif.</span>
+    </div>
+  </div>
+
+  <!-- Motif -->
+  <div class="form-field">
+    <label for="reason">Motif</label>
+    <input
+      id="reason"
+      type="text"
+      formControlName="reason"
+      placeholder="Ex : Loyer janvier"
+    />
+    <div class="field-error" *ngIf="f['reason'].touched && f['reason'].invalid">
+      <span *ngIf="f['reason'].errors?.['required']">Le motif est obligatoire.</span>
+      <span *ngIf="f['reason'].errors?.['minlength']">
+        Le motif doit contenir au moins 3 caractères.
+      </span>
+    </div>
+  </div>
+</div>
+
+      <div class="messages">
+        <div *ngIf="errorMessage" class="alert alert-error">
+          {{ errorMessage }}
+        </div>
+
+        <div *ngIf="successMessage" class="alert alert-success">
+          {{ successMessage }}
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <div *ngIf="lastOperation" class="operation-summary">
+          Dernier virement :
+          <strong>{{ lastOperation.amount | number:'1.2-2' }} DH</strong>
+          vers
+          <strong>{{ lastOperation.accountDestinationNumber }}</strong>
+          <span class="status-badge" [ngClass]="'status-' + lastOperation.status.toLowerCase()">
+            {{ lastOperation.status }}
+          </span>
+        </div>
+
+        <button type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Traitement...' : 'Valider le virement' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

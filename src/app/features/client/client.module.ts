@@ -6,6 +6,7 @@ import { ClientDashboardComponent } from './components/client-dashboard/client-d
 import { DepositComponent } from './components/deposit/deposit.component';
 import { ClientShellComponent } from './components/client-shell/client-shell.component';
 import { WithdrawalComponent } from './components/withdrawal/withdrawal.component';
+import { TransferComponent } from './components/transfer/transfer.component';
 
 @NgModule({
   declarations: [],
@@ -16,7 +17,8 @@ import { WithdrawalComponent } from './components/withdrawal/withdrawal.componen
     ClientDashboardComponent,
     DepositComponent,
     ClientShellComponent,
-    WithdrawalComponent
+    WithdrawalComponent,
+    TransferComponent
   ]
 })
 export class ClientModule {}

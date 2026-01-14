@@ -84,4 +84,16 @@ withdraw(amount: number): Observable<OperationResponse> {
 
   return this.http.post<OperationResponse>(url, body);
 }
+
+transfer(amount: number, destinationAccountNumber: string): Observable<OperationResponse> {
+  const url = `${this.baseUrl}/api/client/operations`;
+
+  const body: OperationRequest = {
+    type: 'TRANSFER',
+    amount,
+    destinationAccountNumber
+  };
+
+  return this.http.post<OperationResponse>(url, body);
+}
 }

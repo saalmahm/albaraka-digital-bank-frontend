@@ -4,16 +4,18 @@ import { ClientDashboardComponent } from './components/client-dashboard/client-d
 import { DepositComponent } from './components/deposit/deposit.component';
 import { ClientShellComponent } from './components/client-shell/client-shell.component';
 import { WithdrawalComponent } from './components/withdrawal/withdrawal.component';
+import { TransferComponent } from './components/transfer/transfer.component';
 
 const routes: Routes = [
   {
     path: '',
     component: ClientShellComponent,
-    children: [
-      { path: '', component: ClientDashboardComponent },
-      { path: 'deposit', component: DepositComponent },
-      { path: 'withdraw', component: WithdrawalComponent }
-    ]
+  children: [
+    { path: '', component: ClientDashboardComponent },
+    { path: 'deposit', component: DepositComponent },
+    { path: 'withdraw', component: WithdrawalComponent },
+    { path: 'transfer', component: TransferComponent }
+  ]
   }
 ];
 
