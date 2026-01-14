@@ -1,148 +1,102 @@
-<div class="client-dashboard">
-  <div class="dashboard-shell">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="user-block" *ngIf="account as acc">
-        <div class="avatar-circle">
-          <span>{{ acc.ownerFullName[0] || 'C' }}</span>
-        </div>
-        <div class="user-info">
-          <div class="user-name">{{ acc.ownerFullName }}</div>
-          <div class="user-email">{{ acc.ownerEmail }}</div>
-        </div>
-      </div>
+<header class="main-header">
+  <h1>Dashboard client</h1>
+  <p class="subtitle">
+    Vue d’ensemble de votre compte et de vos dernières opérations.
+  </p>
+</header>
 
-      <nav class="sidebar-menu">
-        <a routerLink="/client" routerLinkActive="active">
-          <span class="icon">🏠</span>
-          <span>Dashboard</span>
-        </a>
-        <a routerLink="/client/deposit" routerLinkActive="active">
-          <span class="icon">➕</span>
-          <span>Dépôt</span>
-        </a>
-        <!-- Liens placeholder pour plus tard -->
-        <a>
-          <span class="icon">📄</span>
-          <span>Mes relevés</span>
-        </a>
-        <a>
-          <span class="icon">🔔</span>
-          <span>Notifications</span>
-        </a>
-      </nav>
-            <div class="sidebar-footer">
-        <button class="logout-btn" (click)="onLogout()">
-          <span class="icon">⏻</span>
-          <span>Se déconnecter</span>
-        </button>
-      </div>
-    </aside>
-
-    <!-- Contenu principal -->
-    <main class="main-area">
-      <header class="main-header">
-        <h1>Dashboard client</h1>
-        <p class="subtitle">
-          Vue d’ensemble de votre compte et de vos dernières opérations.
-        </p>
-      </header>
-
-      <!-- Cartes de résumé -->
-      <section class="summary-cards">
-        <!-- Solde -->
-        <div class="summary-card primary">
-          <div class="summary-title">Solde courant</div>
-          <div class="summary-value">
-            <ng-container *ngIf="!isLoadingAccount && !errorAccount && account as acc">
-              {{ acc.balance | number:'1.2-2' }} DH
-            </ng-container>
-            <ng-container *ngIf="isLoadingAccount">...</ng-container>
-          </div>
-          <div class="summary-footer">Compte principal</div>
-        </div>
-
-        <!-- Nombre d'opérations -->
-        <div class="summary-card">
-          <div class="summary-title">Opérations</div>
-          <div class="summary-value">
-            {{ totalElements || operations.length }}
-          </div>
-          <div class="summary-footer">dans l’historique chargé</div>
-        </div>
-
-        <!-- Opérations en attente -->
-        <div class="summary-card">
-          <div class="summary-title">En attente</div>
-          <div class="summary-value">
-            {{ pendingCount }}
-          </div>
-          <div class="summary-footer">en validation</div>
-        </div>
-
-    <!-- Dépôts validés -->
-    <div class="summary-card">
-      <div class="summary-title">Dépôts validés</div>
-      <div class="summary-value">
-        {{ validatedDepositsCount }}
-      </div>
-      <div class="summary-footer">sur la période chargée</div>
+<section class="summary-cards">
+  <!-- Solde -->
+  <div class="summary-card primary">
+    <div class="summary-title">Solde courant</div>
+    <div class="summary-value">
+      <ng-container *ngIf="!isLoadingAccount && !errorAccount && account as acc">
+        {{ acc.balance | number:'1.2-2' }} DH
+      </ng-container>
+      <ng-container *ngIf="isLoadingAccount">...</ng-container>
     </div>
-      </section>
-
-      <!-- Bloc historique (tableau existant) -->
-      <section class="operations-panel">
-        <div class="panel-header">
-          <h2>Historique des opérations</h2>
-          <button class="secondary-btn" routerLink="/client/deposit">
-            Effectuer un dépôt
-          </button>
-        </div>
-
-        <div *ngIf="isLoadingOperations" class="info-text">
-          Chargement de l'historique des opérations...
-        </div>
-        <div *ngIf="errorOperations" class="error-message">
-          {{ errorOperations }}
-        </div>
-
-        <table *ngIf="!isLoadingOperations && !errorOperations && operations.length > 0">
-          <thead>
-            <tr>
-              <th>Date création</th>
-              <th>Type</th>
-              <th>Montant</th>
-              <th>Statut</th>
-              <th>Compte source</th>
-              <th>Compte destination</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let op of operations">
-              <td>{{ op.createdAt | date:'short' }}</td>
-              <td>{{ op.type }}</td>
-              <td>{{ op.amount | number:'1.2-2' }} DH</td>
-              <td>
-                <span class="status-badge" [ngClass]="getStatusClass(op.status)">
-                  {{ op.status }}
-                </span>
-              </td>
-              <td>{{ op.accountSourceNumber }}</td>
-              <td>{{ op.accountDestinationNumber || '-' }}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div *ngIf="!isLoadingOperations && !errorOperations && operations.length === 0" class="info-text">
-          Aucune opération trouvée.
-        </div>
-
-        <div *ngIf="totalPages > 1" class="pagination">
-          <button (click)="goToPage(page - 1)" [disabled]="page === 0">Précédent</button>
-          <span>Page {{ page + 1 }} / {{ totalPages }}</span>
-          <button (click)="goToPage(page + 1)" [disabled]="page + 1 >= totalPages">Suivant</button>
-        </div>
-      </section>
-    </main>
+    <div class="summary-footer">Compte principal</div>
   </div>
-</div>
+
+  <!-- Nombre d'opérations -->
+  <div class="summary-card">
+    <div class="summary-title">Opérations</div>
+    <div class="summary-value">
+      {{ totalElements || operations.length }}
+    </div>
+    <div class="summary-footer">dans l’historique chargé</div>
+  </div>
+
+  <!-- En attente -->
+  <div class="summary-card">
+    <div class="summary-title">En attente</div>
+    <div class="summary-value">
+      {{ pendingCount }}
+    </div>
+    <div class="summary-footer">en validation</div>
+  </div>
+
+  <!-- Dépôts validés -->
+  <div class="summary-card">
+    <div class="summary-title">Dépôts validés</div>
+    <div class="summary-value">
+      {{ validatedDepositsCount }}
+    </div>
+    <div class="summary-footer">sur la période chargée</div>
+  </div>
+</section>
+
+<section class="operations-panel">
+  <div class="panel-header">
+    <h2>Historique des opérations</h2>
+    <button class="secondary-btn" routerLink="/client/deposit">
+      Effectuer un dépôt
+    </button>
+  </div>
+
+  <div *ngIf="isLoadingOperations" class="info-text">
+    Chargement de l'historique des opérations...
+  </div>
+  <div *ngIf="errorOperations" class="error-message">
+    {{ errorOperations }}
+  </div>
+
+  <div class="operations-table-wrapper">
+    <table *ngIf="!isLoadingOperations && !errorOperations && operations.length > 0">
+      <thead>
+        <tr>
+          <th>Date création</th>
+          <th>Type</th>
+          <th>Montant</th>
+          <th>Statut</th>
+          <th>Compte source</th>
+          <th>Compte destination</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let op of operations">
+          <td>{{ op.createdAt | date:'short' }}</td>
+          <td>{{ op.type }}</td>
+          <td>{{ op.amount | number:'1.2-2' }} DH</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(op.status)">
+              {{ op.status }}
+            </span>
+          </td>
+          <td>{{ op.accountSourceNumber }}</td>
+          <td>{{ op.accountDestinationNumber || '-' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!isLoadingOperations && !errorOperations && operations.length === 0" class="info-text">
+      Aucune opération trouvée.
+    </div>
+  </div>
+
+  <div *ngIf="totalPages > 1" class="pagination">
+    <button (click)="goToPage(page - 1)" [disabled]="page === 0">Précédent</button>
+    <span>Page {{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="goToPage(page + 1)" [disabled]="page + 1 >= totalPages">Suivant</button>
+  </div>
+</section>
