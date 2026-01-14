@@ -143,7 +143,9 @@
 
 .operations-table-wrapper {
   flex: 1;
-  overflow: auto;
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
   border-radius: 14px;
 }
 

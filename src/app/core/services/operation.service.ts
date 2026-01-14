@@ -73,4 +73,15 @@ deposit(amount: number, description?: string): Observable<OperationResponse> {
   };
   return this.http.post<OperationResponse>(url, body);
 }
+
+withdraw(amount: number): Observable<OperationResponse> {
+  const url = `${this.baseUrl}/api/client/operations`;
+
+  const body: OperationRequest = {
+    type: 'WITHDRAWAL',
+    amount
+  };
+
+  return this.http.post<OperationResponse>(url, body);
+}
 }
