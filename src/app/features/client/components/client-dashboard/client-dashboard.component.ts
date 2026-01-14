@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { OperationService, AccountResponse, OperationResponse } from '../../../../core/services/operation.service';
+import { RouterModule } from '@angular/router'; 
 import { AuthService } from '../../../../core/services/auth.service';
+import { OperationService, AccountResponse, OperationResponse } from '../../../../core/services/operation.service';
 @Component({
   selector: 'app-client-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './client-dashboard.component.html',
   styleUrls: ['./client-dashboard.component.css']
 })
+
 export class ClientDashboardComponent implements OnInit {
   account: AccountResponse | null = null;
   operations: OperationResponse[] = [];
