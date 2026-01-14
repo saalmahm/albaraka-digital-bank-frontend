@@ -1,0 +1,47 @@
+<div class="client-dashboard">
+  <div class="dashboard-shell">
+    <!-- Sidebar partagée -->
+    <aside class="sidebar">
+      <div class="user-block">
+        <div class="avatar-circle">
+          <span>S</span>
+        </div>
+        <div class="user-info">
+          <div class="user-name">Espace client</div>
+          <div class="user-email">client&#64;bank.com</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-menu">
+        <a routerLink="/client" routerLinkActive="active">
+          <img src="assets/icons/home.png" class="icon" alt="Dashboard" />
+          <span>Dashboard</span>
+        </a>
+        <a routerLink="/client/deposit" routerLinkActive="active">
+          <img src="assets/icons/wallet.png" class="icon" alt="Dépôt" />
+          <span>Dépôt</span>
+        </a>
+        <a routerLink="/client/statements" routerLinkActive="active">
+          <img src="assets/icons/document.png" class="icon" alt="Mes relevés" />
+          <span>Mes relevés</span>
+        </a>
+        <a routerLink="/client/notifications" routerLinkActive="active">
+          <img src="assets/icons/bell.png" class="icon" alt="Notifications" />
+          <span>Notifications</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn" (click)="onLogout()">
+          <img src="assets/icons/logout.png" class="icon" alt="Se déconnecter" />
+          <span>Se déconnecter</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Zone de contenu (dashboard, dépôt, etc.) -->
+    <main class="main-area">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
