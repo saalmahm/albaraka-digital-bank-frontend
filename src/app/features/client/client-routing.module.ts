@@ -1,16 +1,18 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ClientDashboardComponent } from './components/client-dashboard/client-dashboard.component';
+import { DepositComponent } from './components/deposit/deposit.component';
+import { ClientShellComponent } from './components/client-shell/client-shell.component';
 
-/**
- * Routes du domaine Client (dashboard, opérations).
- */
 const routes: Routes = [
-  {
+   {
     path: '',
-    component: ClientDashboardComponent
+    component: ClientShellComponent,
+    children: [
+      { path: '', component: ClientDashboardComponent },
+      { path: 'deposit', component: DepositComponent }
+    ]
   }
-  // Plus tard : routes enfants pour dépôt, retrait, virement...
 ];
 
 @NgModule({

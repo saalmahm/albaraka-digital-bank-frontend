@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ClientRoutingModule } from './client-routing.module';
 import { SharedModule } from '../../shared/shared.module';
 import { ClientDashboardComponent } from './components/client-dashboard/client-dashboard.component';
+import { DepositComponent } from './components/deposit/deposit.component';
 
 /**
  * ClientModule
@@ -14,7 +15,8 @@ import { ClientDashboardComponent } from './components/client-dashboard/client-d
     CommonModule,
     SharedModule,
     ClientRoutingModule,
-    ClientDashboardComponent
+    ClientDashboardComponent,
+    DepositComponent
   ]
 })
 export class ClientModule {}
