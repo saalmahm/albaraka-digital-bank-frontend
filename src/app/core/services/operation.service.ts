@@ -3,6 +3,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+export interface OperationRequest {
+  type: OperationType; // 'DEPOSIT' | 'WITHDRAWAL' | 'TRANSFER'
+  amount: number;
+  destinationAccountNumber?: string | null;
+}
 export interface AccountResponse {
   accountId: number;
   accountNumber: string;
@@ -58,4 +63,14 @@ export class OperationService {
 
     return this.http.get<Page<OperationResponse>>(url, { params });
   }
+
+deposit(amount: number, description?: string): Observable<OperationResponse> {
+  const url = `${this.baseUrl}/api/client/operations`;
+
+  const body: OperationRequest = {
+    type: 'DEPOSIT',
+    amount
+  };
+  return this.http.post<OperationResponse>(url, body);
+}
 }
