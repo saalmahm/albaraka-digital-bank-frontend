@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OperationService, AccountResponse, OperationResponse } from '../../../../core/services/operation.service';
+import { AuthService } from '../../../../core/services/auth.service';
 @Component({
   selector: 'app-client-dashboard',
   standalone: true,
@@ -22,13 +23,18 @@ export class ClientDashboardComponent implements OnInit {
   errorAccount: string | null = null;
   errorOperations: string | null = null;
 
-  constructor(private operationService: OperationService) {}
-
+  constructor(
+    private operationService: OperationService,
+    private authService: AuthService
+  ) {}
+  
   ngOnInit(): void {
     this.loadAccount();
     this.loadOperations();
   }
-
+  onLogout(): void {
+    this.authService.logout();
+  }
   loadAccount(): void {
     this.isLoadingAccount = true;
     this.errorAccount = null;
@@ -57,6 +63,7 @@ export class ClientDashboardComponent implements OnInit {
         this.size = response.size;
         this.totalElements = response.totalElements;
         this.totalPages = response.totalPages;
+        this.computeStats(); 
       },
       error: () => {
         this.errorOperations = "Impossible de charger l'historique des opérations.";
@@ -76,5 +83,16 @@ export class ClientDashboardComponent implements OnInit {
       return;
     }
     this.loadOperations(page);
+  }
+
+  pendingCount = 0;
+  validatedDepositsCount = 0;
+
+  private computeStats(): void {
+    this.pendingCount = this.operations.filter((op) => op.status === 'PENDING').length;
+
+    this.validatedDepositsCount = this.operations.filter(
+      (op) => op.type === 'DEPOSIT' && op.status === 'VALIDATED'
+    ).length;
   }
 }
