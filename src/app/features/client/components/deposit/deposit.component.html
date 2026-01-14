@@ -1,0 +1,69 @@
+<header class="main-header">
+  <h1>Effectuer un dépôt</h1>
+  <p class="subtitle">
+    Saisissez le montant de votre dépôt. Selon les règles métier, il peut être validé
+    immédiatement ou passer en statut <strong>PENDING</strong>.
+  </p>
+</header>
+
+<section class="deposit-panel">
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="line-accent"></div>
+      <span>Formulaire de dépôt</span>
+    </div>
+
+    <form [formGroup]="depositForm" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+        <!-- Montant -->
+        <div class="form-field">
+          <label for="amount">Montant</label>
+          <input
+            id="amount"
+            type="number"
+            formControlName="amount"
+            placeholder="Ex : 1000.00"
+          />
+          <div class="field-error" *ngIf="f['amount'].touched && f['amount'].invalid">
+            Montant invalide
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-field full-width">
+          <label for="description">Description</label>
+          <input
+            id="description"
+            type="text"
+            formControlName="description"
+            placeholder="Versement en agence"
+          />
+        </div>
+      </div>
+
+      <div class="messages">
+        <div *ngIf="errorMessage" class="alert alert-error">
+          {{ errorMessage }}
+        </div>
+
+        <div *ngIf="successMessage" class="alert alert-success">
+          {{ successMessage }}
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <div *ngIf="lastOperation" class="operation-summary">
+          Dernier dépôt :
+          <strong>{{ lastOperation.amount | number:'1.2-2' }} DH</strong>
+          <span class="status-badge" [ngClass]="'status-' + lastOperation.status.toLowerCase()">
+            {{ lastOperation.status }}
+          </span>
+        </div>
+
+        <button type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Traitement...' : 'Valider le dépôt' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
