@@ -14,64 +14,81 @@
     </div>
 
     <form [formGroup]="transferForm" (ngSubmit)="onSubmit()">
-<div class="form-grid">
-  <!-- Compte destinataire -->
-  <div class="form-field full-width">
-    <label for="destinationAccountNumber">Compte destinataire</label>
-    <input
-      id="destinationAccountNumber"
-      type="text"
-      formControlName="destinationAccountNumber"
-      placeholder="Ex : ACC-000999"
-    />
-    <div class="field-error" *ngIf="f['destinationAccountNumber'].touched && f['destinationAccountNumber'].invalid">
-      <span *ngIf="f['destinationAccountNumber'].errors?.['required']">
-        Le compte destinataire est obligatoire.
-      </span>
-      <span *ngIf="f['destinationAccountNumber'].errors?.['minlength']">
-        Le numéro de compte est trop court.
-      </span>
-      <span *ngIf="f['destinationAccountNumber'].errors?.['maxlength']">
-        Le numéro de compte est trop long.
-      </span>
-      <span *ngIf="f['destinationAccountNumber'].errors?.['pattern']">
-        Le format du numéro de compte est invalide.
-      </span>
-    </div>
-  </div>
+      <div class="form-grid">
+        <!-- Compte destinataire -->
+        <div class="form-field full-width">
+          <label for="destinationAccountNumber">Compte destinataire</label>
+          <input
+            id="destinationAccountNumber"
+            type="text"
+            formControlName="destinationAccountNumber"
+            placeholder="Ex : ACC-000999"
+          />
+          <div
+            class="field-error"
+            *ngIf="f['destinationAccountNumber'].touched && f['destinationAccountNumber'].invalid"
+          >
+            <span *ngIf="f['destinationAccountNumber'].errors?.['required']">
+              Le compte destinataire est obligatoire.
+            </span>
+            <span *ngIf="f['destinationAccountNumber'].errors?.['minlength']">
+              Le numéro de compte est trop court.
+            </span>
+            <span *ngIf="f['destinationAccountNumber'].errors?.['maxlength']">
+              Le numéro de compte est trop long.
+            </span>
+            <span *ngIf="f['destinationAccountNumber'].errors?.['pattern']">
+              Le format du numéro de compte est invalide.
+            </span>
+          </div>
+        </div>
 
-  <!-- Montant -->
-  <div class="form-field">
-    <label for="amount">Montant</label>
-    <input
-      id="amount"
-      type="number"
-      formControlName="amount"
-      placeholder="Ex : 500.00"
-    />
-    <div class="field-error" *ngIf="f['amount'].touched && f['amount'].invalid">
-      <span *ngIf="f['amount'].errors?.['required']">Le montant est obligatoire.</span>
-      <span *ngIf="f['amount'].errors?.['min']">Le montant doit être strictement positif.</span>
-    </div>
-  </div>
+        <!-- Montant -->
+        <div class="form-field">
+          <label for="amount">Montant</label>
+          <input
+            id="amount"
+            type="number"
+            formControlName="amount"
+            placeholder="Ex : 500.00"
+          />
+          <div class="field-error" *ngIf="f['amount'].touched && f['amount'].invalid">
+            <span *ngIf="f['amount'].errors?.['required']">Le montant est obligatoire.</span>
+            <span *ngIf="f['amount'].errors?.['min']">Le montant doit être strictement positif.</span>
+          </div>
+        </div>
 
-  <!-- Motif -->
-  <div class="form-field">
-    <label for="reason">Motif</label>
-    <input
-      id="reason"
-      type="text"
-      formControlName="reason"
-      placeholder="Ex : Loyer janvier"
-    />
-    <div class="field-error" *ngIf="f['reason'].touched && f['reason'].invalid">
-      <span *ngIf="f['reason'].errors?.['required']">Le motif est obligatoire.</span>
-      <span *ngIf="f['reason'].errors?.['minlength']">
-        Le motif doit contenir au moins 3 caractères.
-      </span>
-    </div>
-  </div>
-</div>
+        <!-- Motif -->
+        <div class="form-field">
+          <label for="reason">Motif</label>
+          <input
+            id="reason"
+            type="text"
+            formControlName="reason"
+            placeholder="Ex : Loyer janvier"
+          />
+          <div class="field-error" *ngIf="f['reason'].touched && f['reason'].invalid">
+            <span *ngIf="f['reason'].errors?.['required']">Le motif est obligatoire.</span>
+            <span *ngIf="f['reason'].errors?.['minlength']">
+              Le motif doit contenir au moins 3 caractères.
+            </span>
+          </div>
+        </div>
+
+        <!-- Upload justificatif si montant > 10 000 DH -->
+        <div class="form-field full-width" *ngIf="f['amount'].value && f['amount'].value > 10000">
+          <label for="transfer-file">Justificatif (PDF, JPG, PNG)</label>
+          <input
+            id="transfer-file"
+            type="file"
+            (change)="onFileSelected($event)"
+            accept=".pdf,image/png,image/jpeg"
+          />
+          <div class="field-error" *ngIf="fileError">
+            {{ fileError }}
+          </div>
+        </div>
+      </div>
 
       <div class="messages">
         <div *ngIf="errorMessage" class="alert alert-error">
@@ -80,6 +97,16 @@
 
         <div *ngIf="successMessage" class="alert alert-success">
           {{ successMessage }}
+        </div>
+
+        <div *ngIf="isUploading" class="alert alert-info">
+          Envoi du justificatif en cours...
+        </div>
+        <div *ngIf="uploadSuccessMessage" class="alert alert-success">
+          {{ uploadSuccessMessage }}
+        </div>
+        <div *ngIf="uploadErrorMessage" class="alert alert-error">
+          {{ uploadErrorMessage }}
         </div>
       </div>
 

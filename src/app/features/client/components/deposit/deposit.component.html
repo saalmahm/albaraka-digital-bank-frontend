@@ -39,6 +39,20 @@
             placeholder="Versement en agence"
           />
         </div>
+
+        <!-- Upload justificatif si montant > 10 000 DH -->
+        <div class="form-field full-width" *ngIf="f['amount'].value && f['amount'].value > 10000">
+          <label for="deposit-file">Justificatif (PDF, JPG, PNG)</label>
+          <input
+            id="deposit-file"
+            type="file"
+            (change)="onFileSelected($event)"
+            accept=".pdf,image/png,image/jpeg"
+          />
+          <div class="field-error" *ngIf="fileError">
+            {{ fileError }}
+          </div>
+        </div>
       </div>
 
       <div class="messages">
@@ -48,6 +62,16 @@
 
         <div *ngIf="successMessage" class="alert alert-success">
           {{ successMessage }}
+        </div>
+
+        <div *ngIf="isUploading" class="alert alert-info">
+          Envoi du justificatif en cours...
+        </div>
+        <div *ngIf="uploadSuccessMessage" class="alert alert-success">
+          {{ uploadSuccessMessage }}
+        </div>
+        <div *ngIf="uploadErrorMessage" class="alert alert-error">
+          {{ uploadErrorMessage }}
         </div>
       </div>
 
