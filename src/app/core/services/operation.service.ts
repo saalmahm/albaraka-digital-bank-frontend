@@ -8,6 +8,7 @@ export interface OperationRequest {
   amount: number;
   destinationAccountNumber?: string | null;
 }
+
 export interface AccountResponse {
   accountId: number;
   accountNumber: string;
@@ -17,7 +18,6 @@ export interface AccountResponse {
 }
 
 export type OperationStatus = 'PENDING' | 'VALIDATED' | 'REJECTED';
-
 export type OperationType = 'DEPOSIT' | 'WITHDRAWAL' | 'TRANSFER';
 
 export interface OperationResponse {
@@ -37,6 +37,13 @@ export interface Page<T> {
   totalPages: number;
   number: number;
   size: number;
+}
+
+export interface DocumentResponse {
+  id: number;
+  fileName: string;
+  fileType: string;
+  uploadedAt: string;
 }
 
 /**
@@ -64,36 +71,28 @@ export class OperationService {
     return this.http.get<Page<OperationResponse>>(url, { params });
   }
 
-deposit(amount: number, description?: string): Observable<OperationResponse> {
-  const url = `${this.baseUrl}/api/client/operations`;
+  deposit(amount: number): Observable<OperationResponse> {
+    const url = `${this.baseUrl}/api/client/operations`;
+    const body: OperationRequest = { type: 'DEPOSIT', amount };
+    return this.http.post<OperationResponse>(url, body);
+  }
 
-  const body: OperationRequest = {
-    type: 'DEPOSIT',
-    amount
-  };
-  return this.http.post<OperationResponse>(url, body);
-}
+  withdraw(amount: number): Observable<OperationResponse> {
+    const url = `${this.baseUrl}/api/client/operations`;
+    const body: OperationRequest = { type: 'WITHDRAWAL', amount };
+    return this.http.post<OperationResponse>(url, body);
+  }
 
-withdraw(amount: number): Observable<OperationResponse> {
-  const url = `${this.baseUrl}/api/client/operations`;
+  transfer(amount: number, destinationAccountNumber: string): Observable<OperationResponse> {
+    const url = `${this.baseUrl}/api/client/operations`;
+    const body: OperationRequest = { type: 'TRANSFER', amount, destinationAccountNumber };
+    return this.http.post<OperationResponse>(url, body);
+  }
 
-  const body: OperationRequest = {
-    type: 'WITHDRAWAL',
-    amount
-  };
-
-  return this.http.post<OperationResponse>(url, body);
-}
-
-transfer(amount: number, destinationAccountNumber: string): Observable<OperationResponse> {
-  const url = `${this.baseUrl}/api/client/operations`;
-
-  const body: OperationRequest = {
-    type: 'TRANSFER',
-    amount,
-    destinationAccountNumber
-  };
-
-  return this.http.post<OperationResponse>(url, body);
-}
+  uploadJustificatif(operationId: number, file: File): Observable<DocumentResponse> {
+    const url = `${this.baseUrl}/api/client/operations/${operationId}/document`;
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<DocumentResponse>(url, formData);
+  }
 }
