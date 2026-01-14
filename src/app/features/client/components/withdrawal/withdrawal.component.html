@@ -1,0 +1,70 @@
+<header class="main-header">
+  <h1>Effectuer un retrait</h1>
+  <p class="subtitle">
+    Saisissez le montant de votre retrait. Selon les règles métier, il peut être validé
+    immédiatement ou passer en statut <strong>PENDING</strong>.
+  </p>
+</header>
+
+<section class="withdrawal-panel">
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="line-accent"></div>
+      <span>Formulaire de retrait</span>
+    </div>
+
+    <form [formGroup]="withdrawalForm" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+        <!-- Montant -->
+        <div class="form-field">
+          <label for="amount">Montant</label>
+          <input
+            id="amount"
+            type="number"
+            formControlName="amount"
+            placeholder="Ex : 500.00"
+          />
+          <div class="field-error" *ngIf="f['amount'].touched && f['amount'].invalid">
+            <span *ngIf="f['amount'].errors?.['required']">Le montant est obligatoire.</span>
+            <span *ngIf="f['amount'].errors?.['min']">Le montant doit être strictement positif.</span>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-field full-width">
+          <label for="description">Description</label>
+          <input
+            id="description"
+            type="text"
+            formControlName="description"
+            placeholder="Retrait au guichet"
+          />
+        </div>
+      </div>
+
+      <div class="messages">
+        <div *ngIf="errorMessage" class="alert alert-error">
+          {{ errorMessage }}
+        </div>
+
+        <div *ngIf="successMessage" class="alert alert-success">
+          {{ successMessage }}
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <div *ngIf="lastOperation" class="operation-summary">
+          Dernier retrait :
+          <strong>{{ lastOperation.amount | number:'1.2-2' }} DH</strong>
+          <span class="status-badge" [ngClass]="'status-' + lastOperation.status.toLowerCase()">
+            {{ lastOperation.status }}
+          </span>
+        </div>
+
+        <button type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Traitement...' : 'Valider le retrait' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
