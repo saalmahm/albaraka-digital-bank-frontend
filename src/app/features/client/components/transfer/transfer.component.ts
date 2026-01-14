@@ -17,6 +17,12 @@ export class TransferComponent {
   errorMessage: string | null = null;
   lastOperation: OperationResponse | null = null;
 
+  selectedFile: File | null = null;
+  fileError: string | null = null;
+  isUploading = false;
+  uploadSuccessMessage: string | null = null;
+  uploadErrorMessage: string | null = null;
+
   constructor(
     private fb: FormBuilder,
     private operationService: OperationService
@@ -40,10 +46,41 @@ export class TransferComponent {
     return this.transferForm.controls;
   }
 
+  onFileSelected(event: Event): void {
+    this.fileError = null;
+    this.uploadSuccessMessage = null;
+    this.uploadErrorMessage = null;
+    this.selectedFile = null;
+
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+    const maxSize = 5 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      this.fileError = 'Type de fichier non autorisé. Autorisés : PDF, JPEG, PNG.';
+      return;
+    }
+
+    if (file.size > maxSize) {
+      this.fileError = 'Le fichier dépasse la taille maximale autorisée (5 Mo).';
+      return;
+    }
+
+    this.selectedFile = file;
+  }
+
   onSubmit(): void {
     this.successMessage = null;
     this.errorMessage = null;
     this.lastOperation = null;
+    this.uploadSuccessMessage = null;
+    this.uploadErrorMessage = null;
+    this.fileError = null;
 
     if (this.transferForm.invalid) {
       this.transferForm.markAllAsTouched();
@@ -62,6 +99,34 @@ export class TransferComponent {
           this.successMessage = `Virement de ${op.amount} DH validé (statut : ${op.status}).`;
         } else {
           this.successMessage = `Virement de ${op.amount} DH enregistré (statut : ${op.status}).`;
+        }
+
+        if (op.amount > 10000 && this.selectedFile) {
+          this.isUploading = true;
+
+          this.operationService.uploadJustificatif(op.id, this.selectedFile).subscribe({
+            next: (doc) => {
+              this.isUploading = false;
+              this.uploadSuccessMessage =
+                `Justificatif "${doc?.fileName ?? 'uploadé'}" envoyé avec succès.`;
+              this.selectedFile = null;
+            },
+            error: (err) => {
+              this.isUploading = false;
+              console.log('UPLOAD JUSTIF ERROR (transfer)', err);
+
+              if (err.status === 200) {
+                this.uploadSuccessMessage = 'Justificatif envoyé avec succès.';
+                this.selectedFile = null;
+                return;
+              }
+
+              this.uploadErrorMessage =
+                err && err.error && err.error.message
+                  ? err.error.message
+                  : `Erreur upload justificatif (status ${err.status})`;
+            }
+          });
         }
 
         this.transferForm.reset();
