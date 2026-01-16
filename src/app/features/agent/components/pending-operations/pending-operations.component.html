@@ -1,4 +1,114 @@
-<div class="agent-pending">
-  <h1>Espace agent bancaire</h1>
-  <p>Liste des opérations en attente (PENDING) à implémenter.</p>
-</div>
+<header class="main-header">
+  <h1>Opérations en attente de validation</h1>
+  <p class="subtitle">
+    Liste des opérations en statut <strong>PENDING</strong> à traiter par l’agent.
+  </p>
+</header>
+
+<section class="operations-panel">
+  <!-- Filtres -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label for="type-filter">Type d'opération</label>
+      <select id="type-filter" [(ngModel)]="filterType" (change)="onFilterChange()">
+        <option value="">Tous</option>
+        <option value="DEPOSIT">Dépôt</option>
+        <option value="WITHDRAWAL">Retrait</option>
+        <option value="TRANSFER">Virement</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="client-filter">Client</label>
+      <input
+        id="client-filter"
+        type="text"
+        placeholder="Nom ou email client"
+        [(ngModel)]="filterClient"
+        (input)="onFilterChange()"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label for="sort-field">Tri</label>
+      <select id="sort-field" [(ngModel)]="sortField" (change)="onSortChange()">
+        <option value="createdAt">Date création</option>
+        <option value="amount">Montant</option>
+        <option value="clientFullName">Client</option>
+        <option value="type">Type</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="sort-dir">Ordre</label>
+      <select id="sort-dir" [(ngModel)]="sortDirection" (change)="onSortChange()">
+        <option value="desc">Décroissant</option>
+        <option value="asc">Croissant</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="isLoading" class="info-text">
+    Chargement des opérations en attente...
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Tableau -->
+  <div class="operations-table-wrapper">
+    <table *ngIf="!isLoading && !errorMessage && operations.length > 0">
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Email</th>
+          <th>Type</th>
+          <th>Montant</th>
+          <th>Date création</th>
+          <th>Justificatif</th>
+          <th>Décision IA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let op of operations">
+          <td>{{ op.clientFullName }}</td>
+          <td>{{ op.clientEmail }}</td>
+          <td>{{ op.type }}</td>
+          <td>{{ op.amount | number:'1.2-2' }} DH</td>
+          <td>{{ op.createdAt | date:'short' }}</td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="op.hasDocument ? 'badge-success' : 'badge-muted'"
+            >
+              {{ op.hasDocument ? 'Oui' : 'Non' }}
+            </span>
+          </td>
+          <td>
+            <span *ngIf="op.aiDecision; else noAi">
+              {{ op.aiDecision }}
+            </span>
+            <ng-template #noAi>—</ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!isLoading && !errorMessage && operations.length === 0" class="info-text">
+      Aucune opération en attente de validation.
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="totalPages > 1" class="pagination">
+    <button (click)="goToPage(page - 1)" [disabled]="page === 0">
+      Précédent
+    </button>
+    <span>Page {{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="goToPage(page + 1)" [disabled]="page + 1 >= totalPages">
+      Suivant
+    </button>
+  </div>
+</section>
