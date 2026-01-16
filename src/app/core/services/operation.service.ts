@@ -46,6 +46,36 @@ export interface DocumentResponse {
   uploadedAt: string;
 }
 
+export interface OperationOwner {
+  id: number;
+  fullName: string;
+  email: string;
+  role: string;
+}
+
+export interface OperationAccount {
+  id: number;
+  accountNumber: string;
+  balance: number;
+  owner: OperationOwner;
+}
+
+export interface OperationDocument {
+  id: number;
+  fileName: string;
+  fileType: string;
+  storagePath: string;
+  uploadedAt: string;
+}
+
+export interface PendingOperation extends OperationResponse {
+  accountSource: OperationAccount;
+  accountDestination: OperationAccount | null;
+  documents: OperationDocument[] | null;
+  aiDecision?: string | null;
+  aiComment?: string | null;
+  aiEvaluatedAt?: string | null;
+}
 /**
  * Service de consultation des comptes et opérations pour le client.
  */
@@ -69,6 +99,15 @@ export class OperationService {
       .set('size', size.toString());
 
     return this.http.get<Page<OperationResponse>>(url, { params });
+  }
+
+  getPendingOperations(page = 0, size = 10): Observable<Page<PendingOperation>> {
+    const url = `${this.baseUrl}/api/agent/operations/jwt/pending`;
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.http.get<Page<PendingOperation>>(url, { params });
   }
 
   deposit(amount: number): Observable<OperationResponse> {

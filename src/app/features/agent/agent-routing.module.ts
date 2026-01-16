@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PendingOperationsComponent } from './components/pending-operations/pending-operations.component';
+import { AgentShellComponent } from './components/agent-shell/agent-shell.component';
 
 /**
  * Routes du domaine Agent bancaire.
@@ -8,7 +9,10 @@ import { PendingOperationsComponent } from './components/pending-operations/pend
 const routes: Routes = [
   {
     path: '',
-    component: PendingOperationsComponent
+    component: AgentShellComponent,
+    children: [
+      { path: '', component: PendingOperationsComponent }
+    ]
   }
 ];
 
