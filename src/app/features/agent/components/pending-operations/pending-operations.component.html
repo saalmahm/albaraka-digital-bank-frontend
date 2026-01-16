@@ -67,8 +67,8 @@
           <th>Type</th>
           <th>Montant</th>
           <th>Date création</th>
-          <th>Justificatif</th>
           <th>Décision IA</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -79,18 +79,15 @@
           <td>{{ op.amount | number:'1.2-2' }} DH</td>
           <td>{{ op.createdAt | date:'short' }}</td>
           <td>
-            <span
-              class="badge"
-              [ngClass]="op.hasDocument ? 'badge-success' : 'badge-muted'"
-            >
-              {{ op.hasDocument ? 'Oui' : 'Non' }}
-            </span>
-          </td>
-          <td>
             <span *ngIf="op.aiDecision; else noAi">
               {{ op.aiDecision }}
             </span>
             <ng-template #noAi>—</ng-template>
+          </td>
+          <td>
+            <button type="button" class="btn-detail" (click)="openDetail(op.id)">
+              Voir détail
+            </button>
           </td>
         </tr>
       </tbody>
@@ -112,3 +109,18 @@
     </button>
   </div>
 </section>
+
+<!-- Panneau de détail -->
+<app-operation-detail
+  *ngIf="selectedOperation"
+  [operation]="selectedOperation"
+  [documents]="detailDocuments"
+  [isLoadingDocuments]="isLoadingDocuments"
+  [actionInProgress]="actionInProgress"
+  [actionSuccessMessage]="actionSuccessMessage"
+  [actionErrorMessage]="actionErrorMessage"
+  [apiBaseUrl]="apiBaseUrl"
+  (approve)="onApproveFromDetail()"
+  (reject)="onRejectFromDetail()"
+  (close)="closeDetail()"
+></app-operation-detail>
