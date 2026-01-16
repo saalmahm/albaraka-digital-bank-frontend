@@ -4,8 +4,11 @@ import { FormsModule } from '@angular/forms';
 import {
   OperationService,
   PendingOperation,
-  Page
+  Page,
+  AgentDocumentResponse
 } from '../../../../core/services/operation.service';
+import { OperationDetailComponent } from '../operation-detail/operation-detail.component';
+import { environment } from '../../../../../environments/environment';
 
 interface PendingOperationView {
   id: number;
@@ -26,7 +29,7 @@ type SortDirection = 'asc' | 'desc';
 @Component({
   selector: 'app-pending-operations',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, OperationDetailComponent],
   templateUrl: './pending-operations.component.html',
   styleUrls: ['./pending-operations.component.css']
 })
@@ -53,6 +56,16 @@ export class PendingOperationsComponent implements OnInit {
   sortField: SortField = 'createdAt';
   sortDirection: SortDirection = 'desc';
 
+  // Détail
+  selectedOperation: PendingOperation | null = null;
+  detailDocuments: AgentDocumentResponse[] = [];
+  isLoadingDocuments = false;
+  actionInProgress = false;
+  actionSuccessMessage: string | null = null;
+  actionErrorMessage: string | null = null;
+
+  readonly apiBaseUrl = environment.apiBaseUrl;
+
   constructor(private operationService: OperationService) {}
 
   ngOnInit(): void {
@@ -73,6 +86,18 @@ export class PendingOperationsComponent implements OnInit {
 
         const mapped = response.content.map((op) => this.mapToView(op));
         this.operations = this.applyFiltersAndSort(mapped);
+
+        // Si on avait une opération sélectionnée, la rafraîchir
+        if (this.selectedOperation) {
+          const updated = response.content.find(
+            (op) => op.id === this.selectedOperation?.id
+          );
+          if (updated) {
+            this.selectedOperation = updated;
+          } else {
+            this.closeDetail();
+          }
+        }
       },
       error: (err) => {
         console.error('Erreur chargement opérations PENDING', err);
@@ -90,6 +115,14 @@ export class PendingOperationsComponent implements OnInit {
 
   private mapToView(op: PendingOperation): PendingOperationView {
     const owner = op.accountSource?.owner;
+
+    // 1) Utiliser le flag hasDocument si l’API le renvoie
+    // 2) Sinon, déduire à partir de la liste documents
+    const hasDoc =
+      typeof op.hasDocument === 'boolean'
+        ? op.hasDocument
+        : Array.isArray(op.documents) && op.documents.length > 0;
+
     return {
       id: op.id,
       type: op.type,
@@ -98,7 +131,7 @@ export class PendingOperationsComponent implements OnInit {
       createdAt: op.createdAt,
       clientFullName: owner?.fullName ?? '—',
       clientEmail: owner?.email ?? '—',
-      hasDocument: !!op.documents && op.documents.length > 0,
+      hasDocument: hasDoc,
       aiDecision: op.aiDecision ?? null,
       aiComment: op.aiComment ?? null
     };
@@ -170,5 +203,101 @@ export class PendingOperationsComponent implements OnInit {
 
   getStatusClass(status: string): string {
     return 'status-' + status.toLowerCase();
+  }
+
+  // === Détail ===
+
+  openDetail(opId: number): void {
+    if (!this.rawPage) {
+      return;
+    }
+    const found = this.rawPage.content.find((op) => op.id === opId);
+    if (!found) {
+      return;
+    }
+    this.selectedOperation = found;
+    this.actionSuccessMessage = null;
+    this.actionErrorMessage = null;
+    this.loadDocuments(found.id);
+  }
+
+  closeDetail(): void {
+    this.selectedOperation = null;
+    this.detailDocuments = [];
+    this.isLoadingDocuments = false;
+    this.actionInProgress = false;
+    this.actionSuccessMessage = null;
+    this.actionErrorMessage = null;
+  }
+
+  private loadDocuments(operationId: number): void {
+    this.isLoadingDocuments = true;
+    this.detailDocuments = [];
+
+    this.operationService.getOperationDocuments(operationId).subscribe({
+      next: (docs) => {
+        this.detailDocuments = docs;
+      },
+      error: (err) => {
+        console.error('Erreur chargement justificatifs', err);
+        this.actionErrorMessage =
+          err && err.error && err.error.message
+            ? err.error.message
+            : "Impossible de charger les justificatifs.";
+      },
+      complete: () => {
+        this.isLoadingDocuments = false;
+      }
+    });
+  }
+
+  onApproveFromDetail(): void {
+    if (!this.selectedOperation) {
+      return;
+    }
+    this.actionInProgress = true;
+    this.actionErrorMessage = null;
+    this.actionSuccessMessage = null;
+
+    this.operationService.approveOperation(this.selectedOperation.id).subscribe({
+      next: () => {
+        this.actionInProgress = false;
+        this.actionSuccessMessage = 'Opération approuvée avec succès.';
+        this.loadPendingOperations(this.page);
+      },
+      error: (err) => {
+        this.actionInProgress = false;
+        console.error('Erreur approbation', err);
+        this.actionErrorMessage =
+          err && err.error && err.error.message
+            ? err.error.message
+            : "Une erreur est survenue lors de l'approbation.";
+      }
+    });
+  }
+
+  onRejectFromDetail(): void {
+    if (!this.selectedOperation) {
+      return;
+    }
+    this.actionInProgress = true;
+    this.actionErrorMessage = null;
+    this.actionSuccessMessage = null;
+
+    this.operationService.rejectOperation(this.selectedOperation.id).subscribe({
+      next: () => {
+        this.actionInProgress = false;
+        this.actionSuccessMessage = 'Opération rejetée avec succès.';
+        this.loadPendingOperations(this.page);
+      },
+      error: (err) => {
+        this.actionInProgress = false;
+        console.error('Erreur rejet', err);
+        this.actionErrorMessage =
+          err && err.error && err.error.message
+            ? err.error.message
+            : "Une erreur est survenue lors du rejet.";
+      }
+    });
   }
 }

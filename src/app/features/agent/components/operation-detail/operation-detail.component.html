@@ -1,0 +1,126 @@
+<div class="detail-overlay" *ngIf="operation" (click)="onClose()">
+  <div class="detail-panel" (click)="$event.stopPropagation()">
+    <div class="detail-header">
+      <div>
+        <h2>Opération #{{ operation.id }}</h2>
+        <p class="subtitle">
+          {{ operation.type }} •
+          {{ operation.amount | number:'1.2-2' }} DH •
+          <span class="status-badge" [ngClass]="'status-' + operation.status.toLowerCase()">
+            {{ operation.status }}
+          </span>
+        </p>
+      </div>
+      <button class="close-btn" (click)="onClose()">✕</button>
+    </div>
+
+    <!-- Corps -->
+    <div class="detail-body">
+      <!-- Infos client -->
+      <section class="detail-section">
+        <h3>Client</h3>
+        <p>
+          <strong>{{ operation.accountSource.owner.fullName }}</strong><br />
+          <span class="muted">{{ operation.accountSource.owner.email }}</span>
+        </p>
+        <p class="muted">
+          Compte source : {{ operation.accountSource.accountNumber }}
+        </p>
+      </section>
+
+      <!-- Informations opération -->
+      <section class="detail-section">
+        <h3>Détails de l'opération</h3>
+        <div class="grid-2">
+          <div>
+            <div class="label">Type</div>
+            <div>{{ operation.type }}</div>
+          </div>
+          <div>
+            <div class="label">Montant</div>
+            <div>{{ operation.amount | number:'1.2-2' }} DH</div>
+          </div>
+          <div>
+            <div class="label">Date création</div>
+            <div>{{ operation.createdAt | date:'short' }}</div>
+          </div>
+          <div>
+            <div class="label">Date exécution</div>
+            <div>{{ operation.executedAt ? (operation.executedAt | date:'short') : '—' }}</div>
+          </div>
+        </div>
+
+        <div class="ai-block" *ngIf="operation.aiDecision || operation.aiComment">
+          <div class="label">Décision IA</div>
+          <div class="ai-decision">
+            {{ operation.aiDecision || '—' }}
+          </div>
+          <div class="ai-comment" *ngIf="operation.aiComment">
+            {{ operation.aiComment }}
+          </div>
+        </div>
+      </section>
+
+      <!-- Justificatifs -->
+      <section class="detail-section">
+        <h3>Justificatifs</h3>
+
+        <div *ngIf="isLoadingDocuments" class="info-text">
+          Chargement des justificatifs...
+        </div>
+
+        <div *ngIf="!isLoadingDocuments && documents.length === 0" class="info-text">
+          Aucun justificatif fourni pour cette opération.
+        </div>
+
+        <ul *ngIf="!isLoadingDocuments && documents.length > 0" class="docs-list">
+          <li *ngFor="let doc of documents">
+            <div class="doc-main">
+              <span class="doc-name">{{ doc.fileName }}</span>
+              <span class="doc-type">{{ doc.fileType }}</span>
+            </div>
+            <div class="doc-meta">
+              Téléversé le {{ doc.uploadedAt | date:'short' }}
+            </div>
+            <button type="button" class="doc-download-btn" (click)="openDocument(doc)">
+              Consulter
+            </button>
+          </li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- Actions -->
+    <section class="detail-section actions-section">
+      <div class="messages">
+        <div *ngIf="actionSuccessMessage" class="alert alert-success">
+          {{ actionSuccessMessage }}
+        </div>
+        <div *ngIf="actionErrorMessage" class="alert alert-error">
+          {{ actionErrorMessage }}
+        </div>
+      </div>
+
+      <!-- Boutons visibles seulement s'il y a au moins un justificatif -->
+      <div class="actions-buttons" *ngIf="!isLoadingDocuments && documents.length > 0">
+        <button
+          type="button"
+          class="btn-reject"
+          (click)="onReject()"
+          [disabled]="actionInProgress"
+        >
+          {{ actionInProgress ? 'Traitement...' : 'Rejeter' }}
+        </button>
+
+        <button
+          type="button"
+          class="btn-approve"
+          (click)="onApprove()"
+          [disabled]="actionInProgress"
+        >
+          {{ actionInProgress ? 'Traitement...' : 'Approuver' }}
+        </button>
+      </div>
+    </section>
+  </div>
+</div>

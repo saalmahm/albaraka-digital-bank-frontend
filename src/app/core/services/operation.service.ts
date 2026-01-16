@@ -68,14 +68,27 @@ export interface OperationDocument {
   uploadedAt: string;
 }
 
+export interface AgentDocumentResponse {
+  id: number;
+  fileName: string;
+  fileType: string;
+  uploadedAt: string;
+  operationId: number;
+}
+
 export interface PendingOperation extends OperationResponse {
   accountSource: OperationAccount;
   accountDestination: OperationAccount | null;
   documents: OperationDocument[] | null;
+
+  // Flag envoyé par l’API pour indiquer la présence de justificatif (si dispo)
+  hasDocument?: boolean;
+
   aiDecision?: string | null;
   aiComment?: string | null;
   aiEvaluatedAt?: string | null;
 }
+
 /**
  * Service de consultation des comptes et opérations pour le client.
  */
@@ -133,5 +146,25 @@ export class OperationService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<DocumentResponse>(url, formData);
+  }
+
+  getOperationDocuments(operationId: number): Observable<AgentDocumentResponse[]> {
+    const url = `${this.baseUrl}/api/agent/operations/${operationId}/documents`;
+    return this.http.get<AgentDocumentResponse[]>(url);
+  }
+
+  approveOperation(operationId: number): Observable<PendingOperation> {
+    const url = `${this.baseUrl}/api/agent/operations/${operationId}/approve`;
+    return this.http.put<PendingOperation>(url, {});
+  }
+
+  rejectOperation(operationId: number): Observable<PendingOperation> {
+    const url = `${this.baseUrl}/api/agent/operations/${operationId}/reject`;
+    return this.http.put<PendingOperation>(url, {});
+  }
+
+  downloadAgentDocument(documentId: number): Observable<Blob> {
+    const url = `${this.baseUrl}/api/agent/documents/${documentId}/download`;
+    return this.http.get(url, { responseType: 'blob' }) as Observable<Blob>;
   }
 }
