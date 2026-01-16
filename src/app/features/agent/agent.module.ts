@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AgentRoutingModule } from './agent-routing.module';
 import { SharedModule } from '../../shared/shared.module';
 import { PendingOperationsComponent } from './components/pending-operations/pending-operations.component';
+import { AgentShellComponent } from './components/agent-shell/agent-shell.component';
 
 /**
  * AgentModule
@@ -14,7 +15,7 @@ import { PendingOperationsComponent } from './components/pending-operations/pend
     CommonModule,
     SharedModule,
     AgentRoutingModule,
-    // Composant standalone importé ici
+    AgentShellComponent,
     PendingOperationsComponent
   ]
 })
