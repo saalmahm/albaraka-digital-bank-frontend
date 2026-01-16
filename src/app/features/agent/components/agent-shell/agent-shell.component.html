@@ -1,0 +1,35 @@
+<div class="agent-dashboard">
+  <div class="dashboard-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="user-block">
+        <div class="avatar-circle">
+          <span>A</span>
+        </div>
+        <div class="user-info">
+          <div class="user-name">Espace agent bancaire</div>
+          <div class="user-email">agent&#64;bank.com</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-menu">
+        <a routerLink="/agent" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <img src="assets/icons/home.png" class="icon" alt="Pending" />
+          <span>Opérations PENDING</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn" (click)="onLogout()">
+          <img src="assets/icons/logout.png" class="icon" alt="Se déconnecter" />
+          <span>Se déconnecter</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Zone de contenu agent -->
+    <main class="main-area">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
