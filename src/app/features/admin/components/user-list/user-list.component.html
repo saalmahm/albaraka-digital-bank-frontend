@@ -1,0 +1,113 @@
+<header class="main-header">
+  <h1>Utilisateurs</h1>
+  <p class="subtitle">
+    Liste des utilisateurs administrables (CLIENT, AGENT_BANCAIRE, ADMIN).
+  </p>
+</header>
+
+<section class="operations-panel">
+  <!-- Filtres -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label for="email-filter">Email / Nom</label>
+      <input
+        id="email-filter"
+        type="text"
+        placeholder="Email ou nom"
+        [(ngModel)]="filterEmail"
+        (input)="onFilterChange()"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label for="role-filter">Rôle</label>
+      <select id="role-filter" [(ngModel)]="filterRole" (change)="onFilterChange()">
+        <option value="">Tous</option>
+        <option value="CLIENT">Client</option>
+        <option value="AGENT_BANCAIRE">Agent bancaire</option>
+        <option value="ADMIN">Admin</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="status-filter">Statut</label>
+      <select id="status-filter" [(ngModel)]="filterActive" (change)="onFilterChange()">
+        <option value="">Tous</option>
+        <option value="ACTIVE">Actif</option>
+        <option value="INACTIVE">Inactif</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="sort-field">Tri</label>
+      <select id="sort-field" [(ngModel)]="sortField" (change)="onSortChange()">
+        <option value="createdAt">Date création</option>
+        <option value="fullName">Nom</option>
+        <option value="email">Email</option>
+        <option value="role">Rôle</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="sort-dir">Ordre</label>
+      <select id="sort-dir" [(ngModel)]="sortDirection" (change)="onSortChange()">
+        <option value="desc">Décroissant</option>
+        <option value="asc">Croissant</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="isLoading" class="info-text">
+    Chargement des utilisateurs...
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Tableau -->
+  <div class="operations-table-wrapper">
+    <table *ngIf="!isLoading && !errorMessage && users.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nom complet</th>
+          <th>Email</th>
+          <th>Rôle</th>
+          <th>Statut</th>
+          <th>Date création</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.id }}</td>
+          <td>{{ user.fullName }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>
+            <span class="badge" [ngClass]="getStatusClass(user)">
+              {{ getStatusLabel(user) }}
+            </span>
+          </td>
+          <td>{{ user.createdAt | date:'short' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!isLoading && !errorMessage && users.length === 0" class="info-text">
+      Aucun utilisateur trouvé.
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="totalPages > 1" class="pagination">
+    <button (click)="goToPage(page - 1)" [disabled]="page === 0">
+      Précédent
+    </button>
+    <span>Page {{ page + 1 }} / {{ totalPages }}</span>
+    <button (click)="goToPage(page + 1)" [disabled]="page + 1 >= totalPages">
+      Suivant
+    </button>
+  </div>
+</section>
