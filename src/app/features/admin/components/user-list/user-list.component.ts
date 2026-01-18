@@ -30,6 +30,7 @@ export class UserListComponent implements OnInit {
   // états UI
   isLoading = false;
   errorMessage: string | null = null;
+  actionErrorMessage: string | null = null;
 
   // filtres front
   filterEmail = '';
@@ -49,6 +50,7 @@ export class UserListComponent implements OnInit {
   loadUsers(page: number = this.page): void {
     this.isLoading = true;
     this.errorMessage = null;
+    this.actionErrorMessage = null;
 
     this.userService.getAdminUsers(page, this.size).subscribe({
       next: (response) => {
@@ -146,5 +148,51 @@ export class UserListComponent implements OnInit {
 
   getStatusClass(user: AdminUserSummary): string {
     return user.active ? 'badge-success' : 'badge-muted';
+  }
+
+  onToggleActive(user: AdminUserSummary, enable: boolean): void {
+    this.actionErrorMessage = null;
+
+    const actionLabel = enable ? 'activer' : 'désactiver';
+    const confirmed = window.confirm(
+      `Voulez-vous vraiment ${actionLabel} le compte de ${user.fullName} (${user.email}) ?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const request$ = enable
+      ? this.userService.enableUser(user.id)
+      : this.userService.disableUser(user.id);
+
+    request$.subscribe({
+      next: () => {
+        // mise à jour locale
+        user.active = enable;
+
+        if (this.rawPage) {
+          const idx = this.rawPage.content.findIndex((u) => u.id === user.id);
+          if (idx !== -1) {
+            this.rawPage.content[idx] = {
+              ...this.rawPage.content[idx],
+              active: enable
+            };
+          }
+          this.users = this.applyFiltersAndSort(this.rawPage.content);
+        }
+      },
+      error: (err) => {
+        console.error('Erreur changement statut utilisateur', err);
+
+        if (err.status === 401 || err.status === 403) {
+          this.actionErrorMessage =
+            "Vous n'avez pas les droits pour modifier le statut de cet utilisateur.";
+        } else {
+          this.actionErrorMessage =
+            'Une erreur est survenue lors du changement de statut. Veuillez réessayer.';
+        }
+      }
+    });
   }
 }
