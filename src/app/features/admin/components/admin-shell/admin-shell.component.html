@@ -1,0 +1,39 @@
+<div class="client-dashboard">
+  <div class="dashboard-shell">
+    <!-- Sidebar partagée -->
+    <aside class="sidebar">
+      <div class="user-block">
+        <div class="avatar-circle">
+          <span>A</span>
+        </div>
+        <div class="user-info">
+          <div class="user-name">Espace administrateur</div>
+          <div class="user-email">admin&#64;bank.com</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-menu">
+        <a
+          routerLink="/admin"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <img src="assets/icons/home.png" class="icon" alt="Utilisateurs" />
+          <span>Utilisateurs</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn" (click)="onLogout()">
+          <img src="assets/icons/logout.png" class="icon" alt="Se déconnecter" />
+          <span>Se déconnecter</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Zone de contenu admin -->
+    <main class="main-area">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
