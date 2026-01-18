@@ -1,14 +1,18 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { UserManagementComponent } from './components/user-management/user-management.component';
+import { AdminShellComponent } from './components/admin-shell/admin-shell.component';
 
-/**
- * Routes du domaine Administration 
- */
 const routes: Routes = [
   {
     path: '',
-    component: UserManagementComponent
+    component: AdminShellComponent,
+    children: [
+      {
+        path: '',
+        component: UserManagementComponent
+      }
+    ]
   }
 ];
 
