@@ -76,6 +76,7 @@
           <th>Email</th>
           <th>Rôle</th>
           <th>Statut</th>
+          <th>Actions</th>
           <th>Date création</th>
         </tr>
       </thead>
@@ -90,7 +91,23 @@
               {{ getStatusLabel(user) }}
             </span>
           </td>
-          <td>{{ user.createdAt | date:'short' }}</td>
+          <td>
+            <button
+              *ngIf="!user.active"
+              class="btn-small btn-activate"
+              (click)="onToggleActive(user, true)"
+            >
+              Activer
+            </button>
+            <button
+              *ngIf="user.active"
+              class="btn-small btn-deactivate"
+              (click)="onToggleActive(user, false)"
+            >
+              Désactiver
+            </button>
+          </td>
+          <td>{{ user.createdAt | date: 'short' }}</td>
         </tr>
       </tbody>
     </table>
@@ -98,6 +115,10 @@
     <div *ngIf="!isLoading && !errorMessage && users.length === 0" class="info-text">
       Aucun utilisateur trouvé.
     </div>
+  </div>
+
+  <div *ngIf="actionErrorMessage" class="error-message">
+    {{ actionErrorMessage }}
   </div>
 
   <!-- Pagination -->
