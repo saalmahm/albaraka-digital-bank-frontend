@@ -112,3 +112,29 @@ tbody tr:nth-child(even) {
   gap: 10px;
   font-size: 0.82rem;
 }
+.btn-small {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.74rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-activate {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.btn-activate:hover {
+  background: #bbf7d0;
+}
+
+.btn-deactivate {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.btn-deactivate:hover {
+  background: #fecaca;
+}
