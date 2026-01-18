@@ -36,4 +36,13 @@ export class UserService {
 
     return this.http.get<Page<AdminUserSummary>>(url, { params });
   }
+    enableUser(userId: number) {
+    const url = `${this.baseUrl}/api/admin/users/${userId}/enable`;
+    return this.http.post<void>(url, {});
+  }
+
+  disableUser(userId: number) {
+    const url = `${this.baseUrl}/api/admin/users/${userId}/disable`;
+    return this.http.post<void>(url, {});
+  }
 }
